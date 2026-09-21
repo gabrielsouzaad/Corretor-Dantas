@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import PropertyForm from "./PropertyForm";
+import PropertyList from "./PropertyList";
 import "./Admin.css";
 
 function Admin() {
@@ -36,6 +37,8 @@ function Admin() {
         </div>
 
         <PropertyForm />
+
+        <PropertyList />
 
       </section>
     </main>

@@ -29,29 +29,19 @@ function PropertyForm() {
     setError("");
 
     try {
-      const token = localStorage.getItem("token");
-
-      await api.post(
-        "/properties",
-        {
-          title,
-          description,
-          price: Number(price),
-          type,
-          transactionType,
-          bedrooms: Number(bedrooms),
-          bathrooms: Number(bathrooms),
-          area: Number(area),
-          city,
-          neighborhood,
-          address,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.post("/properties", {
+        title,
+        description,
+        price: Number(price),
+        type,
+        transactionType,
+        bedrooms: Number(bedrooms),
+        bathrooms: Number(bathrooms),
+        area: Number(area),
+        city,
+        neighborhood,
+        address,
+      });
 
       setMessage("Imóvel cadastrado com sucesso!");
 
