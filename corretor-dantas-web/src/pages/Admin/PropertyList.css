@@ -1,0 +1,157 @@
+.property-list {
+  margin-top: 40px;
+}
+
+.property-list-header {
+  margin-bottom: 24px;
+}
+
+.property-list-header span {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #64748b;
+}
+
+.property-list-header h2 {
+  margin: 8px 0;
+  color: #111827;
+}
+
+.property-list-header p {
+  margin: 0;
+  color: #64748b;
+}
+
+.property-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.property-list-card {
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.property-list-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.property-list-main {
+  flex: 1;
+}
+
+.property-list-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.property-list-title-row h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+}
+
+.property-list-status {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #047857;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.property-list-location {
+  margin: 8px 0;
+  color: #64748b;
+}
+
+.property-list-price {
+  margin: 12px 0;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.property-list-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: #475569;
+  font-size: 14px;
+}
+
+.property-list-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.property-list-actions button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.property-list-edit {
+  background: #111827;
+  color: #ffffff;
+}
+
+.property-list-edit:hover {
+  background: #1f2937;
+}
+
+.property-list-delete {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.property-list-delete:hover {
+  background: #fecaca;
+}
+
+.property-list-empty {
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  color: #64748b;
+}
+
+.property-list-error {
+  padding: 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+@media (max-width: 700px) {
+
+  .property-list-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .property-list-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .property-list-actions {
+    width: 100%;
+  }
+
+  .property-list-actions button {
+    flex: 1;
+  }
+
+}
