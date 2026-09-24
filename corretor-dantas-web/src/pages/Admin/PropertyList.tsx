@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
 import type { Property } from "../../types/property";
+import PropertyForm from "./PropertyForm";
 import "./PropertyList.css";
 
 function PropertyList() {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
 
   async function loadProperties() {
     try {
@@ -81,6 +83,28 @@ function PropertyList() {
           Gerencie os imóveis disponíveis no sistema.
         </p>
       </div>
+
+      {editingProperty && (
+        <div className="property-list-edit-form">
+
+          <PropertyForm
+            property={editingProperty}
+            onSuccess={() => {
+              setEditingProperty(null);
+              loadProperties();
+            }}
+          />
+
+          <button
+            type="button"
+            className="property-list-cancel"
+            onClick={() => setEditingProperty(null)}
+          >
+            Cancelar edição
+          </button>
+
+        </div>
+      )}
 
       {properties.length === 0 ? (
         <p className="property-list-empty">
@@ -169,6 +193,7 @@ function PropertyList() {
                     <button
                       type="button"
                       className="property-list-edit"
+                      onClick={() => setEditingProperty(property)}
                     >
                       Editar
                     </button>

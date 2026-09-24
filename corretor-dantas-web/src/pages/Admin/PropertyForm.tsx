@@ -1,23 +1,67 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import api from "../../services/api";
+import type { Property } from "../../types/property";
 import "./PropertyForm.css";
 
-function PropertyForm() {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [type, setType] = useState("HOUSE");
-  const [transactionType, setTransactionType] = useState("SALE");
-  const [bedrooms, setBedrooms] = useState("");
-  const [bathrooms, setBathrooms] = useState("");
-  const [area, setArea] = useState("");
-  const [city, setCity] = useState("");
-  const [neighborhood, setNeighborhood] = useState("");
-  const [address, setAddress] = useState("");
+interface PropertyFormProps {
+  property?: Property | null;
+  onSuccess?: () => void;
+}
+
+function PropertyForm({
+  property,
+  onSuccess,
+}: PropertyFormProps) {
+  const [title, setTitle] = useState(property?.title ?? "");
+  const [description, setDescription] = useState(
+    property?.description ?? ""
+  );
+  const [price, setPrice] = useState(
+    property ? String(property.price) : ""
+  );
+  const [type, setType] = useState(
+    property?.type ?? "HOUSE"
+  );
+  const [transactionType, setTransactionType] = useState(
+    property?.transactionType ?? "SALE"
+  );
+  const [bedrooms, setBedrooms] = useState(
+    property ? String(property.bedrooms) : ""
+  );
+  const [bathrooms, setBathrooms] = useState(
+    property ? String(property.bathrooms) : ""
+  );
+  const [area, setArea] = useState(
+    property ? String(property.area) : ""
+  );
+  const [city, setCity] = useState(property?.city ?? "");
+  const [neighborhood, setNeighborhood] = useState(
+    property?.neighborhood ?? ""
+  );
+  const [address, setAddress] = useState(
+    property?.address ?? ""
+  );
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setTitle(property?.title ?? "");
+    setDescription(property?.description ?? "");
+    setPrice(property ? String(property.price) : "");
+    setType(property?.type ?? "HOUSE");
+    setTransactionType(property?.transactionType ?? "SALE");
+    setBedrooms(property ? String(property.bedrooms) : "");
+    setBathrooms(property ? String(property.bathrooms) : "");
+    setArea(property ? String(property.area) : "");
+    setCity(property?.city ?? "");
+    setNeighborhood(property?.neighborhood ?? "");
+    setAddress(property?.address ?? "");
+
+    setMessage("");
+    setError("");
+  }, [property]);
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
@@ -29,7 +73,7 @@ function PropertyForm() {
     setError("");
 
     try {
-      await api.post("/properties", {
+      const request = {
         title,
         description,
         price: Number(price),
@@ -41,25 +85,47 @@ function PropertyForm() {
         city,
         neighborhood,
         address,
-      });
+      };
 
-      setMessage("Imóvel cadastrado com sucesso!");
+      if (property) {
+        await api.put(
+          `/properties/${property.id}`,
+          request
+        );
+      } else {
+        await api.post(
+          "/properties",
+          request
+        );
+      }
 
-      setTitle("");
-      setDescription("");
-      setPrice("");
-      setType("HOUSE");
-      setTransactionType("SALE");
-      setBedrooms("");
-      setBathrooms("");
-      setArea("");
-      setCity("");
-      setNeighborhood("");
-      setAddress("");
+      setMessage(
+        property
+          ? "Imóvel atualizado com sucesso!"
+          : "Imóvel cadastrado com sucesso!"
+      );
+
+      onSuccess?.();
+
+      if (!property) {
+        setTitle("");
+        setDescription("");
+        setPrice("");
+        setType("HOUSE");
+        setTransactionType("SALE");
+        setBedrooms("");
+        setBathrooms("");
+        setArea("");
+        setCity("");
+        setNeighborhood("");
+        setAddress("");
+      }
 
     } catch {
       setError(
-        "Não foi possível cadastrar o imóvel."
+        property
+          ? "Não foi possível atualizar o imóvel."
+          : "Não foi possível cadastrar o imóvel."
       );
     } finally {
       setLoading(false);
@@ -72,10 +138,16 @@ function PropertyForm() {
       <div className="property-form-header">
         <span>IMÓVEIS</span>
 
-        <h2>Cadastrar imóvel</h2>
+        <h2>
+          {property
+            ? "Editar imóvel"
+            : "Cadastrar imóvel"}
+        </h2>
 
         <p>
-          Adicione um novo imóvel ao catálogo.
+          {property
+            ? "Atualize as informações do imóvel."
+            : "Adicione um novo imóvel ao catálogo."}
         </p>
       </div>
 
@@ -149,9 +221,18 @@ function PropertyForm() {
               setType(event.target.value)
             }
           >
-            <option value="HOUSE">Casa</option>
-            <option value="APARTMENT">Apartamento</option>
-            <option value="LAND">Terreno</option>
+            <option value="HOUSE">
+              Casa
+            </option>
+
+            <option value="APARTMENT">
+              Apartamento
+            </option>
+
+            <option value="LAND">
+              Terreno
+            </option>
+
             <option value="COMMERCIAL">
               Comercial
             </option>
@@ -170,8 +251,13 @@ function PropertyForm() {
               setTransactionType(event.target.value)
             }
           >
-            <option value="SALE">Venda</option>
-            <option value="RENT">Aluguel</option>
+            <option value="SALE">
+              Venda
+            </option>
+
+            <option value="RENT">
+              Aluguel
+            </option>
           </select>
         </div>
 
@@ -297,7 +383,9 @@ function PropertyForm() {
             disabled={loading}
           >
             {loading
-              ? "Cadastrando..."
+              ? "Salvando..."
+              : property
+              ? "Salvar alterações"
               : "Cadastrar imóvel"}
           </button>
         </div>

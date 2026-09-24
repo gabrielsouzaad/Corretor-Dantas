@@ -154,4 +154,27 @@
     flex: 1;
   }
 
+  .property-list-edit-form {
+    margin-bottom: 40px;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+  }
+
+  .property-list-cancel {
+    margin-top: 16px;
+    padding: 10px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #374151;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .property-list-cancel:hover {
+    background: #f3f4f6;
+  }
+
 }
