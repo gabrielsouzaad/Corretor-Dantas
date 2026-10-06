@@ -1,6 +1,7 @@
 package Corretor.Dantas.API.config;
 
 import Corretor.Dantas.API.exception.ApiError;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,16 +15,15 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
-
 import tools.jackson.databind.ObjectMapper;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import jakarta.servlet.http.HttpServletResponse;
-
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -75,6 +75,24 @@ public class SecurityConfig {
         return converter;
     }
 
+
+    @Bean
+    public BearerTokenResolver bearerTokenResolver() {
+        DefaultBearerTokenResolver delegate = new DefaultBearerTokenResolver();
+
+        return request -> {
+            String path = request.getRequestURI();
+            String method = request.getMethod();
+
+            boolean publicEndpoint =
+                    path.equals("/auth/login")
+                            || (path.equals("/users") && HttpMethod.POST.matches(method))
+                            || (path.startsWith("/properties") && HttpMethod.GET.matches(method));
+
+            return publicEndpoint ? null : delegate.resolve(request);
+        };
+    }
+
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint(
             ObjectMapper objectMapper
@@ -92,10 +110,7 @@ public class SecurityConfig {
             response.setContentType("application/json");
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-            objectMapper.writeValue(
-                    response.getOutputStream(),
-                    error
-            );
+            objectMapper.writeValue(response.getOutputStream(), error);
         };
     }
 
@@ -116,10 +131,7 @@ public class SecurityConfig {
             response.setContentType("application/json");
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-            objectMapper.writeValue(
-                    response.getOutputStream(),
-                    error
-            );
+            objectMapper.writeValue(response.getOutputStream(), error);
         };
     }
 
@@ -127,6 +139,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             JwtAuthenticationConverter jwtAuthenticationConverter,
+            BearerTokenResolver bearerTokenResolver,
             AuthenticationEntryPoint authenticationEntryPoint,
             AccessDeniedHandler accessDeniedHandler
     ) throws Exception {
@@ -148,34 +161,29 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
 
-                        .requestMatchers("/admin/**")
-                        .hasRole("ADMIN")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
 
-                        .requestMatchers("/users/me")
-                        .hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/users/me").hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/properties/**").permitAll()
-
-                        .requestMatchers(HttpMethod.POST, "/properties")
-                        .hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.PUT, "/properties/**")
-                        .hasRole("ADMIN")
-
-                        .requestMatchers(HttpMethod.DELETE, "/properties/**")
-                        .hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/properties/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/properties/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/properties/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
 
-                .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(
-                                        jwtAuthenticationConverter
-                                )
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .bearerTokenResolver(bearerTokenResolver)
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter)
                         )
                 );
 

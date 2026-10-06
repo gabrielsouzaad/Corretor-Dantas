@@ -1,16 +1,22 @@
 import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { login } from "../../services/authService";
+import { isAdmin, removeToken, saveToken } from "../../utils/auth";
 import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    searchParams.get("expired")
+      ? "Sua sessão expirou. Entre novamente."
+      : ""
+  );
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
@@ -23,14 +29,20 @@ function Login() {
     try {
       const data = await login(email, password);
 
-      localStorage.setItem("token", data.token);
+      saveToken(data.token);
 
-      navigate("/admin");
+      if (!isAdmin()) {
+        removeToken();
+        setError(
+          "Esta conta não tem permissão para acessar o painel administrativo."
+        );
+        return;
+      }
+
+      navigate("/admin", { replace: true });
 
     } catch {
-      setError(
-        "E-mail ou senha inválidos."
-      );
+      setError("E-mail ou senha inválidos.");
     } finally {
       setLoading(false);
     }

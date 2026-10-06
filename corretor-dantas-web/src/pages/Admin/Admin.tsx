@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import PropertyForm from "./PropertyForm";
 import PropertyList from "./PropertyList";
 import "./Admin.css";
+import { removeToken } from "../../utils/auth";
 
 function Admin() {
   const navigate = useNavigate();
@@ -10,6 +11,11 @@ function Admin() {
     localStorage.removeItem("token");
     navigate("/login");
   }
+
+function handleLogout() {
+  removeToken();
+  navigate("/login");
+}
 
   return (
     <main className="admin-page">

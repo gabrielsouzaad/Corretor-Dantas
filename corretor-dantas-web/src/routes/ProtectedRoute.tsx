@@ -1,9 +1,16 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { isAdmin, isAuthenticated } from "../utils/auth";
 
-function ProtectedRoute() {
-  const token = localStorage.getItem("token");
+interface ProtectedRouteProps {
+  adminOnly?: boolean;
+}
 
-  if (!token) {
+function ProtectedRoute({ adminOnly = false }: ProtectedRouteProps) {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (adminOnly && !isAdmin()) {
     return <Navigate to="/login" replace />;
   }
 

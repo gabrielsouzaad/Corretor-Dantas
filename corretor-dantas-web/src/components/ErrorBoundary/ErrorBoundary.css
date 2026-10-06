@@ -1,0 +1,30 @@
+.error-boundary {
+  max-width: 480px;
+  margin: 80px auto;
+  padding: 32px;
+  text-align: center;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.error-boundary h1 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 24px;
+}
+
+.error-boundary p {
+  margin: 0 0 20px;
+  color: #64748b;
+}
+
+.error-boundary button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
