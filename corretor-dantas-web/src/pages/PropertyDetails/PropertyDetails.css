@@ -1,0 +1,161 @@
+.property-details {
+  min-height: calc(100vh - 80px);
+  padding: 60px 24px;
+  background: #f8fafc;
+}
+
+.property-details-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.property-details-image {
+  position: relative;
+  height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5e7eb;
+  color: #64748b;
+}
+
+.property-details-image span {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.property-details-image strong {
+  font-size: 28px;
+}
+
+.property-details-content {
+  padding: 40px;
+}
+
+.property-details-subtitle {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #64748b;
+}
+
+.property-details-content h1 {
+  margin: 10px 0 8px;
+  color: #111827;
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+.property-details-location {
+  margin: 0;
+  color: #64748b;
+  font-size: 16px;
+}
+
+.property-details-price {
+  margin: 24px 0;
+  color: #111827;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.property-details-info {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.property-details-info div {
+  min-width: 130px;
+  padding: 18px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.property-details-info strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #111827;
+  font-size: 20px;
+}
+
+.property-details-info span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.property-details-section {
+  padding-top: 28px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.property-details-section + .property-details-section {
+  margin-top: 28px;
+}
+
+.property-details-section h2 {
+  margin: 0 0 12px;
+  color: #111827;
+  font-size: 22px;
+}
+
+.property-details-section p {
+  margin: 8px 0;
+  color: #475569;
+  line-height: 1.7;
+}
+
+.property-details-section strong {
+  color: #111827;
+}
+
+.property-details-error {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 10px;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+@media (max-width: 700px) {
+  .property-details {
+    padding: 30px 16px;
+  }
+
+  .property-details-image {
+    height: 240px;
+  }
+
+  .property-details-content {
+    padding: 24px;
+  }
+
+  .property-details-content h1 {
+    font-size: 28px;
+  }
+
+  .property-details-price {
+    font-size: 24px;
+  }
+
+  .property-details-info {
+    flex-direction: column;
+  }
+
+  .property-details-info div {
+    width: 100%;
+  }
+}

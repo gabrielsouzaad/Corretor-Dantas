@@ -5,6 +5,7 @@ import Properties from "../pages/Properties/Properties";
 import Login from "../pages/Login/Login";
 import Admin from "../pages/Admin/Admin";
 import ProtectedRoute from "./ProtectedRoute";
+import PropertyDetails from "../pages/PropertyDetails/PropertyDetails";
 
 function AppRoutes() {
   return (
@@ -15,6 +16,7 @@ function AppRoutes() {
         <Route path="/" element={<Home />} />
         <Route path="/imoveis" element={<Properties />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/imoveis/:id" element={<PropertyDetails />} />
 
         <Route element={<ProtectedRoute />}>
             <Route path="/admin" element={<Admin />} />

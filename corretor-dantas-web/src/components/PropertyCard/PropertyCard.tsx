@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { Property } from "../../types/property";
 import "./PropertyCard.css";
 
@@ -6,6 +7,8 @@ interface PropertyCardProps {
 }
 
 function PropertyCard({ property }: PropertyCardProps) {
+  const navigate = useNavigate();
+
   const formattedPrice = property.price.toLocaleString("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -16,9 +19,15 @@ function PropertyCard({ property }: PropertyCardProps) {
       ? "Venda"
       : "Aluguel";
 
-  return (
-    <article className="property-card">
+  function handleClick() {
+    navigate(`/imoveis/${property.id}`);
+  }
 
+  return (
+    <article
+      className="property-card"
+      onClick={handleClick}
+    >
       <div className="property-card-image">
         <span className="property-card-type">
           {transactionLabel}
@@ -30,7 +39,6 @@ function PropertyCard({ property }: PropertyCardProps) {
       </div>
 
       <div className="property-card-content">
-
         <h2 className="property-card-title">
           {property.title}
         </h2>
@@ -44,7 +52,6 @@ function PropertyCard({ property }: PropertyCardProps) {
         </p>
 
         <div className="property-card-details">
-
           <span>
             {property.bedrooms} quartos
           </span>
@@ -56,11 +63,8 @@ function PropertyCard({ property }: PropertyCardProps) {
           <span>
             {property.area} m²
           </span>
-
         </div>
-
       </div>
-
     </article>
   );
 }
