@@ -1,21 +1,18 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { removeToken } from "../../utils/auth";
 import PropertyForm from "./PropertyForm";
 import PropertyList from "./PropertyList";
 import "./Admin.css";
-import { removeToken } from "../../utils/auth";
 
 function Admin() {
   const navigate = useNavigate();
+  const [refreshKey, setRefreshKey] = useState(0);
 
   function handleLogout() {
-    localStorage.removeItem("token");
+    removeToken();
     navigate("/login");
   }
-
-function handleLogout() {
-  removeToken();
-  navigate("/login");
-}
 
   return (
     <main className="admin-page">
@@ -42,9 +39,11 @@ function handleLogout() {
           </button>
         </div>
 
-        <PropertyForm />
+        <PropertyForm
+          onSuccess={() => setRefreshKey((key) => key + 1)}
+        />
 
-        <PropertyList />
+        <PropertyList refreshKey={refreshKey} />
 
       </section>
     </main>

@@ -101,6 +101,11 @@
   cursor: pointer;
 }
 
+.property-list-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .property-list-edit {
   background: #111827;
   color: #ffffff;
@@ -134,6 +139,52 @@
   color: #b91c1c;
 }
 
+.property-list-action-error {
+  margin: 0 0 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.property-list-retry {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.property-list-retry:hover {
+  background: #1f2937;
+}
+
+.property-list-edit-form {
+  margin-bottom: 40px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.property-list-cancel {
+  margin-top: 16px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #374151;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.property-list-cancel:hover {
+  background: #f3f4f6;
+}
+
 @media (max-width: 700px) {
 
   .property-list-content {
@@ -155,26 +206,7 @@
   }
 
   .property-list-edit-form {
-    margin-bottom: 40px;
-    padding: 24px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-  }
-
-  .property-list-cancel {
-    margin-top: 16px;
-    padding: 10px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    background: #ffffff;
-    color: #374151;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .property-list-cancel:hover {
-    background: #f3f4f6;
+    padding: 16px;
   }
 
 }

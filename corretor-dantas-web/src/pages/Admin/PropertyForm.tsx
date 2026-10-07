@@ -1,3 +1,4 @@
+import { getErrorMessage } from "../../utils/errors";
 import { FormEvent, useEffect, useState } from "react";
 import api from "../../services/api";
 import type { Property } from "../../types/property";
@@ -121,13 +122,16 @@ function PropertyForm({
         setAddress("");
       }
 
-    } catch {
-      setError(
-        property
-          ? "Não foi possível atualizar o imóvel."
-          : "Não foi possível cadastrar o imóvel."
-      );
-    } finally {
+        } catch (err) {
+          setError(
+            getErrorMessage(
+              err,
+              property
+                ? "Não foi possível atualizar o imóvel."
+                : "Não foi possível cadastrar o imóvel."
+            )
+          );
+        } finally {
       setLoading(false);
     }
   }
