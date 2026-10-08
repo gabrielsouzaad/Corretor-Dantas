@@ -16,6 +16,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import Corretor.Dantas.API.dto.PropertyImageResponse;
 
 import java.math.BigDecimal;
 
@@ -143,7 +144,11 @@ public class PropertyController {
                 property.getAddress(),
                 property.getStatus(),
                 property.getCreatedAt(),
-                property.getUpdatedAt()
+                property.getUpdatedAt(),
+                property.getImages().stream()
+                        .map(PropertyImageResponse::from)
+                        .toList()
+
         );
     }
 }

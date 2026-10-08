@@ -14,6 +14,8 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
@@ -44,6 +46,7 @@ public class GlobalExceptionHandler {
         return build(status, message, List.of());
     }
 
+    //Regras de negócio
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ApiError> handleEmailAlreadyExists(
@@ -69,6 +72,7 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
+    //Requisição inválida
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(
@@ -133,6 +137,30 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, "Recurso não encontrado");
     }
 
+    //  Upload de arquivos
+
+    @ExceptionHandler(InvalidFileException.class)
+    public ResponseEntity<ApiError> handleInvalidFile(
+            InvalidFileException exception) {
+        return build(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleMaxUploadSize(
+            MaxUploadSizeExceededException exception) {
+        return build(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                "Imagem maior que o limite de 5 MB"
+        );
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiError> handleMissingPart(
+            MissingServletRequestPartException exception) {
+        return build(HttpStatus.BAD_REQUEST, "Nenhum arquivo enviado");
+    }
+
+    // Segurança e banco
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied(
@@ -150,6 +178,7 @@ public class GlobalExceptionHandler {
         );
     }
 
+    //  Qualquer outro erro
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGenericException(

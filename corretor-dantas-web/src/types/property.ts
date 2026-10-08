@@ -30,6 +30,7 @@ export interface Property {
   status: PropertyStatus;
   createdAt: string;
   updatedAt: string;
+  images: PropertyImage[];
 }
 
 export interface PropertyPage {
@@ -38,4 +39,10 @@ export interface PropertyPage {
   size: number;
   totalElements: number;
   totalPages: number;
+}
+
+export interface PropertyImage {
+  id: number;
+  url: string;
+  cover: boolean;
 }

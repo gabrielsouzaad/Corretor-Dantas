@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../services/api";
+import ImageGallery from "../../components/ImageGallery/ImageGallery";
 import type { Property } from "../../types/property";
 import "./PropertyDetails.css";
 
@@ -77,10 +78,11 @@ function PropertyDetails() {
   return (
     <main className="property-details">
       <section className="property-details-container">
-        <div className="property-details-image">
-          <span>{transactionLabel}</span>
-          <strong>Imóvel</strong>
-        </div>
+        <ImageGallery
+                  images={property.images}
+                  alt={property.title}
+                  badge={transactionLabel}
+                />
 
         <div className="property-details-content">
           <span className="property-details-subtitle">

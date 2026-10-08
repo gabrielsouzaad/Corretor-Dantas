@@ -1,8 +1,13 @@
-import { getErrorMessage } from "../../utils/errors";
 import { FormEvent, useEffect, useState } from "react";
 import api from "../../services/api";
-import type { Property } from "../../types/property";
+import { uploadPropertyImages } from "../../services/propertyImageService";
+import type { Property, PropertyImage } from "../../types/property";
+import { getErrorMessage } from "../../utils/errors";
+import ImageUploader from "../../components/ImageUploader/ImageUploader";
+import PropertyImages from "./PropertyImages";
 import "./PropertyForm.css";
+
+const MAX_IMAGES = 10;
 
 interface PropertyFormProps {
   property?: Property | null;
@@ -43,9 +48,17 @@ function PropertyForm({
     property?.address ?? ""
   );
 
+  const [images, setImages] = useState<PropertyImage[]>(
+    property?.images ?? []
+  );
+  const [files, setFiles] = useState<File[]>([]);
+  const [imageNotice, setImageNotice] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const remainingSlots = MAX_IMAGES - images.length;
 
   useEffect(() => {
     setTitle(property?.title ?? "");
@@ -60,9 +73,29 @@ function PropertyForm({
     setNeighborhood(property?.neighborhood ?? "");
     setAddress(property?.address ?? "");
 
+    setImages(property?.images ?? []);
+    setFiles([]);
+    setImageNotice("");
+
     setMessage("");
     setError("");
   }, [property]);
+
+  function resetFields() {
+    setTitle("");
+    setDescription("");
+    setPrice("");
+    setType("HOUSE");
+    setTransactionType("SALE");
+    setBedrooms("");
+    setBathrooms("");
+    setArea("");
+    setCity("");
+    setNeighborhood("");
+    setAddress("");
+    setFiles([]);
+    setImageNotice("");
+  }
 
   async function handleSubmit(
     event: FormEvent<HTMLFormElement>
@@ -73,33 +106,77 @@ function PropertyForm({
     setMessage("");
     setError("");
 
-    try {
-      const request = {
-        title,
-        description,
-        price: Number(price),
-        type,
-        transactionType,
-        bedrooms: Number(bedrooms),
-        bathrooms: Number(bathrooms),
-        area: Number(area),
-        city,
-        neighborhood,
-        address,
-      };
+    const request = {
+      title,
+      description,
+      price: Number(price),
+      type,
+      transactionType,
+      bedrooms: Number(bedrooms),
+      bathrooms: Number(bathrooms),
+      area: Number(area),
+      city,
+      neighborhood,
+      address,
+    };
 
+    let propertyId: number;
+
+    try {
       if (property) {
-        await api.put(
-          `/properties/${property.id}`,
-          request
-        );
+        await api.put(`/properties/${property.id}`, request);
+        propertyId = property.id;
       } else {
-        await api.post(
+        const response = await api.post<Property>(
           "/properties",
           request
         );
+        propertyId = response.data.id;
       }
+    } catch (err) {
+      setError(
+        getErrorMessage(
+          err,
+          property
+            ? "Não foi possível atualizar o imóvel."
+            : "Não foi possível cadastrar o imóvel."
+        )
+      );
+      setLoading(false);
+      return;
+    }
 
+    let imageError = "";
+
+    if (files.length > 0) {
+      try {
+        const updated = await uploadPropertyImages(propertyId, files);
+        setImages(updated);
+        setFiles([]);
+      } catch (err) {
+        imageError = getErrorMessage(
+          err,
+          "Não foi possível enviar as imagens."
+        );
+      }
+    }
+
+
+    if (!property) {
+      resetFields();
+    }
+
+    if (imageError) {
+      setError(
+        property
+          ? `Dados salvos, mas as imagens não foram enviadas: ${imageError}`
+          : `Imóvel cadastrado, mas as imagens não foram enviadas: ${imageError} Edite o imóvel na lista para enviá-las novamente.`
+      );
+
+      if (!property) {
+        onSuccess?.();
+      }
+    } else {
       setMessage(
         property
           ? "Imóvel atualizado com sucesso!"
@@ -107,33 +184,9 @@ function PropertyForm({
       );
 
       onSuccess?.();
-
-      if (!property) {
-        setTitle("");
-        setDescription("");
-        setPrice("");
-        setType("HOUSE");
-        setTransactionType("SALE");
-        setBedrooms("");
-        setBathrooms("");
-        setArea("");
-        setCity("");
-        setNeighborhood("");
-        setAddress("");
-      }
-
-        } catch (err) {
-          setError(
-            getErrorMessage(
-              err,
-              property
-                ? "Não foi possível atualizar o imóvel."
-                : "Não foi possível cadastrar o imóvel."
-            )
-          );
-        } finally {
-      setLoading(false);
     }
+
+    setLoading(false);
   }
 
   return (
@@ -222,7 +275,7 @@ function PropertyForm({
             id="type"
             value={type}
             onChange={(event) =>
-              setType(event.target.value)
+              setType(event.target.value as Property["type"])
             }
           >
             <option value="HOUSE">
@@ -252,7 +305,9 @@ function PropertyForm({
             id="transactionType"
             value={transactionType}
             onChange={(event) =>
-              setTransactionType(event.target.value)
+              setTransactionType(
+                event.target.value as Property["transactionType"]
+              )
             }
           >
             <option value="SALE">
@@ -366,6 +421,34 @@ function PropertyForm({
             placeholder="Rua, número..."
             required
           />
+        </div>
+
+        <div className="property-form-field property-form-full">
+          <span className="property-form-label">
+            Imagens
+          </span>
+
+          {property && (
+            <PropertyImages
+              propertyId={property.id}
+              images={images}
+              onChange={setImages}
+            />
+          )}
+
+          <ImageUploader
+            files={files}
+            onChange={setFiles}
+            maxFiles={remainingSlots}
+            disabled={loading}
+            onError={setImageNotice}
+          />
+
+          {imageNotice && (
+            <p className="property-form-error">
+              {imageNotice}
+            </p>
+          )}
         </div>
 
         {message && (

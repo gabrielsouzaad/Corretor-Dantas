@@ -6,6 +6,7 @@ import Corretor.Dantas.API.entity.TransactionType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record PropertyResponse(
 
@@ -37,6 +38,8 @@ public record PropertyResponse(
 
         LocalDateTime createdAt,
 
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+
+        List<PropertyImageResponse> images
 ) {
 }

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import type { Property } from "../../types/property";
+import { getImageUrl } from "../../utils/images";
 import "./PropertyCard.css";
 
 interface PropertyCardProps {
@@ -19,6 +20,9 @@ function PropertyCard({ property }: PropertyCardProps) {
       ? "Venda"
       : "Aluguel";
 
+  const images = property.images ?? [];
+  const cover = images.find((image) => image.cover) ?? images[0];
+
   function handleClick() {
     navigate(`/imoveis/${property.id}`);
   }
@@ -29,12 +33,20 @@ function PropertyCard({ property }: PropertyCardProps) {
       onClick={handleClick}
     >
       <div className="property-card-image">
+        {cover ? (
+          <img
+            src={getImageUrl(cover.url)}
+            alt={property.title}
+            loading="lazy"
+          />
+        ) : (
+          <span className="property-card-placeholder">
+            Imóvel
+          </span>
+        )}
+
         <span className="property-card-type">
           {transactionLabel}
-        </span>
-
-        <span className="property-card-placeholder">
-          Imóvel
         </span>
       </div>
 

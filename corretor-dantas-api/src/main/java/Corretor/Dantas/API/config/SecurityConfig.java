@@ -87,7 +87,8 @@ public class SecurityConfig {
             boolean publicEndpoint =
                     path.equals("/auth/login")
                             || (path.equals("/users") && HttpMethod.POST.matches(method))
-                            || (path.startsWith("/properties") && HttpMethod.GET.matches(method));
+                            || (path.startsWith("/properties") && HttpMethod.GET.matches(method))
+                            || (path.startsWith("/uploads") && HttpMethod.GET.matches(method));
 
             return publicEndpoint ? null : delegate.resolve(request);
         };
@@ -171,6 +172,7 @@ public class SecurityConfig {
                         .requestMatchers("/users/me").hasAnyRole("USER", "ADMIN")
 
                         .requestMatchers(HttpMethod.GET, "/properties/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/properties/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/properties/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/properties/**").hasRole("ADMIN")

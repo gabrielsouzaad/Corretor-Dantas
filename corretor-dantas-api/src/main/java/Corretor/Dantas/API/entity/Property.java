@@ -2,6 +2,10 @@ package Corretor.Dantas.API.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -57,6 +61,12 @@ public class Property {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PropertyStatus status;
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("cover DESC, id ASC")
+    @BatchSize(size = 50)
+    @Builder.Default
+    private List<PropertyImage> images = new ArrayList<>();
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
