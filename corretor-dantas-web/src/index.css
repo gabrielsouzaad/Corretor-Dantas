@@ -1,3 +1,71 @@
+:root {
+  color-scheme: light;
+
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --surface-alt: #f8fafc;
+  --placeholder: #e5e7eb;
+
+  --text: #111827;
+  --text-soft: #374151;
+  --muted: #64748b;
+
+  --border: #e5e7eb;
+  --border-strong: #d1d5db;
+
+  --primary: #111827;
+  --primary-hover: #1f2937;
+  --on-primary: #ffffff;
+
+  --danger-bg: #fef2f2;
+  --danger-text: #b91c1c;
+  --danger-soft: #fee2e2;
+  --danger-soft-hover: #fecaca;
+
+  --success-bg: #ecfdf5;
+  --success-text: #047857;
+
+  --hero-from: #f8fafc;
+  --hero-to: #eef2f7;
+
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0b0f17;
+  --surface: #151a23;
+  --surface-alt: #1b212c;
+  --placeholder: #232b38;
+
+  --text: #f3f4f6;
+  --text-soft: #d1d5db;
+  --muted: #94a3b8;
+
+  --border: #2a3342;
+  --border-strong: #3a4458;
+
+  --primary: #f3f4f6;
+  --primary-hover: #ffffff;
+  --on-primary: #111827;
+
+  --danger-bg: #2a1215;
+  --danger-text: #fca5a5;
+  --danger-soft: #3b1519;
+  --danger-soft-hover: #4c1d22;
+
+  --success-bg: #0f2a20;
+  --success-text: #6ee7b7;
+
+  --hero-from: #0b0f17;
+  --hero-to: #121826;
+
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -5,6 +73,7 @@
 html {
   margin: 0;
   padding: 0;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -20,12 +89,18 @@ body {
     "Segoe UI",
     sans-serif;
 
-  background-color: #f8fafc;
-  color: #111827;
+  background-color: var(--bg);
+  color: var(--text);
+
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 a {
   color: inherit;
+}
+
+img {
+  max-width: 100%;
 }
 
 button,
@@ -33,4 +108,25 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+input,
+select,
+textarea {
+  color: var(--text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
 }

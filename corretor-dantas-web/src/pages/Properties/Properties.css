@@ -12,7 +12,7 @@
 }
 
 .properties-subtitle {
-  color: #6b7280;
+  color: var(--muted);
 
   font-size: 13px;
   font-weight: 700;
@@ -23,7 +23,7 @@
 .properties-header h1 {
   margin: 10px 0;
 
-  color: #111827;
+  color: var(--text);
 
   font-size: 42px;
 }
@@ -31,7 +31,7 @@
 .properties-header p {
   margin: 0;
 
-  color: #6b7280;
+  color: var(--muted);
 
   font-size: 17px;
 }
@@ -39,29 +39,40 @@
 .properties-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   gap: 24px;
 }
 
 @media (max-width: 900px) {
+  .properties {
+    padding: 56px 20px;
+  }
+
   .properties-grid {
-    grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 600px) {
   .properties {
-    padding: 40px 16px;
+    padding: 36px 16px;
+  }
+
+  .properties-header {
+    margin-bottom: 28px;
   }
 
   .properties-header h1 {
-    font-size: 34px;
+    font-size: 32px;
+  }
+
+  .properties-header p {
+    font-size: 16px;
   }
 
   .properties-grid {
     grid-template-columns: 1fr;
+    gap: 18px;
   }
 }

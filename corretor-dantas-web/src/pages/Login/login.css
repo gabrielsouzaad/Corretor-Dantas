@@ -4,17 +4,17 @@
   justify-content: center;
   align-items: center;
   padding: 40px 20px;
-  background-color: #f8fafc;
+  background-color: var(--bg);
 }
 
 .login-card {
   width: 100%;
   max-width: 420px;
   padding: 40px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  box-shadow: var(--shadow-lg);
 }
 
 .login-header {
@@ -25,18 +25,18 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .login-header h1 {
   margin: 8px 0;
   font-size: 32px;
-  color: #111827;
+  color: var(--text);
 }
 
 .login-header p {
   margin: 0;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .login-form {
@@ -54,21 +54,21 @@
 .login-field label {
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-soft);
 }
 
 .login-field input {
   width: 100%;
   padding: 13px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   outline: none;
-  background-color: #ffffff;
-  color: #111827;
+  background-color: var(--surface);
+  color: var(--text);
 }
 
 .login-field input:focus {
-  border-color: #111827;
+  border-color: var(--primary);
 }
 
 .login-button {
@@ -76,22 +76,41 @@
   padding: 13px;
   border: none;
   border-radius: 8px;
-  background-color: #111827;
-  color: #ffffff;
+  background-color: var(--primary);
+  color: var(--on-primary);
   font-weight: 600;
   cursor: pointer;
   transition: 0.2s;
 }
 
 .login-button:hover {
-  background-color: #1f2937;
+  background-color: var(--primary-hover);
+}
+
+.login-button:disabled {
+  opacity: 0.6;
 }
 
 .login-error {
   margin: 0;
   padding: 12px;
   border-radius: 8px;
-  background-color: #fef2f2;
-  color: #b91c1c;
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
   font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 24px 12px;
+    align-items: flex-start;
+  }
+
+  .login-card {
+    padding: 24px 20px;
+  }
+
+  .login-header h1 {
+    font-size: 28px;
+  }
 }

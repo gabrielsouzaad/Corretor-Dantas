@@ -1,8 +1,8 @@
 .property-form {
   margin-top: 40px;
   padding: 32px;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 12px;
 }
 
@@ -14,17 +14,17 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .property-form-header h2 {
   margin: 8px 0;
-  color: #111827;
+  color: var(--text);
 }
 
 .property-form-header p {
   margin: 0;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .property-form-grid {
@@ -37,16 +37,18 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .property-form-full {
   grid-column: 1 / -1;
 }
 
-.property-form-field label {
+.property-form-field label,
+.property-form-label {
   font-size: 14px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text-soft);
 }
 
 .property-form-field input,
@@ -54,16 +56,21 @@
 .property-form-field select {
   width: 100%;
   padding: 12px 14px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   outline: none;
-  background: #ffffff;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.property-form-field textarea {
+  resize: vertical;
 }
 
 .property-form-field input:focus,
 .property-form-field textarea:focus,
 .property-form-field select:focus {
-  border-color: #111827;
+  border-color: var(--primary);
 }
 
 .property-form-button {
@@ -71,14 +78,14 @@
   padding: 13px;
   border: none;
   border-radius: 8px;
-  background: #111827;
-  color: #ffffff;
+  background: var(--primary);
+  color: var(--on-primary);
   font-weight: 600;
   cursor: pointer;
 }
 
 .property-form-button:hover {
-  background: #1f2937;
+  background: var(--primary-hover);
 }
 
 .property-form-button:disabled {
@@ -91,8 +98,8 @@
   margin: 0;
   padding: 12px;
   border-radius: 8px;
-  background: #ecfdf5;
-  color: #047857;
+  background: var(--success-bg);
+  color: var(--success-text);
 }
 
 .property-form-error {
@@ -100,22 +107,18 @@
   margin: 0;
   padding: 12px;
   border-radius: 8px;
-  background: #fef2f2;
-  color: #b91c1c;
+  background: var(--danger-bg);
+  color: var(--danger-text);
 }
 
 @media (max-width: 700px) {
   .property-form-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .property-form {
-    padding: 20px;
+    margin-top: 28px;
+    padding: 20px 16px;
   }
-}
-
-property-form-label {
-  font-size: 14px;
-  font-weight: 600;
-  color: #374151;
 }

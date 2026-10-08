@@ -8,17 +8,17 @@
 .image-uploader .image-uploader-button {
   display: inline-block;
   padding: 11px 16px;
-  border: 1px dashed #9ca3af;
+  border: 1px dashed var(--border-strong);
   border-radius: 8px;
-  background: #f9fafb;
-  color: #111827;
+  background: var(--surface-alt);
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
 .image-uploader .image-uploader-button:hover {
-  background: #f3f4f6;
+  background: var(--placeholder);
 }
 
 .image-uploader .image-uploader-button.is-disabled {
@@ -27,7 +27,7 @@
 }
 
 .image-uploader-hint {
-  color: #64748b;
+  color: var(--muted);
   font-size: 13px;
 }
 
@@ -44,7 +44,7 @@
 .image-uploader-item {
   position: relative;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border);
   border-radius: 10px;
 }
 
@@ -59,14 +59,20 @@
   position: absolute;
   top: 6px;
   right: 6px;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   padding: 0;
   border: none;
   border-radius: 50%;
-  background: rgba(17, 24, 39, 0.8);
+  background: rgba(17, 24, 39, 0.85);
   color: #ffffff;
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .image-uploader-list {
+    grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  }
 }

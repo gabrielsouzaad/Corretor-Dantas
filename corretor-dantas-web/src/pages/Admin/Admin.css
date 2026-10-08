@@ -1,7 +1,7 @@
 .admin-page {
   min-height: calc(100vh - 69px);
   padding: 60px 20px;
-  background-color: #f8fafc;
+  background-color: var(--bg);
 }
 
 .admin-container {
@@ -13,17 +13,17 @@
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 2px;
-  color: #64748b;
+  color: var(--muted);
 }
 
 .admin-container h1 {
   margin: 10px 0;
   font-size: 36px;
-  color: #111827;
+  color: var(--text);
 }
 
 .admin-container p {
-  color: #64748b;
+  color: var(--muted);
 }
 
 .admin-logout {
@@ -31,10 +31,14 @@
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
-  background-color: #111827;
-  color: white;
+  background-color: var(--primary);
+  color: var(--on-primary);
   font-weight: 600;
   cursor: pointer;
+}
+
+.admin-logout:hover {
+  background-color: var(--primary-hover);
 }
 
 .admin-header {
@@ -45,7 +49,20 @@
 }
 
 @media (max-width: 700px) {
+  .admin-page {
+    padding: 32px 12px;
+  }
+
+  .admin-container h1 {
+    font-size: 28px;
+  }
+
   .admin-header {
     flex-direction: column;
+    gap: 0;
+  }
+
+  .admin-logout {
+    margin-top: 8px;
   }
 }
