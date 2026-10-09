@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { useState, type FormEvent } from "react";
 import api from "../../services/api";
 import { uploadPropertyImages } from "../../services/propertyImageService";
 import type { Property, PropertyImage } from "../../types/property";
@@ -60,26 +60,7 @@ function PropertyForm({
 
   const remainingSlots = MAX_IMAGES - images.length;
 
-  useEffect(() => {
-    setTitle(property?.title ?? "");
-    setDescription(property?.description ?? "");
-    setPrice(property ? String(property.price) : "");
-    setType(property?.type ?? "HOUSE");
-    setTransactionType(property?.transactionType ?? "SALE");
-    setBedrooms(property ? String(property.bedrooms) : "");
-    setBathrooms(property ? String(property.bathrooms) : "");
-    setArea(property ? String(property.area) : "");
-    setCity(property?.city ?? "");
-    setNeighborhood(property?.neighborhood ?? "");
-    setAddress(property?.address ?? "");
 
-    setImages(property?.images ?? []);
-    setFiles([]);
-    setImageNotice("");
-
-    setMessage("");
-    setError("");
-  }, [property]);
 
   function resetFields() {
     setTitle("");

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, type ChangeEvent } from "react";
 import "./ImageUploader.css";
 
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -19,14 +19,16 @@ function ImageUploader({
   disabled = false,
   onError,
 }: ImageUploaderProps) {
-  const [previews, setPreviews] = useState<string[]>([]);
+  const previews = useMemo(
+    () => files.map((file) => URL.createObjectURL(file)),
+    [files]
+  );
 
   useEffect(() => {
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setPreviews(urls);
-
-    return () => urls.forEach((url) => URL.revokeObjectURL(url));
-  }, [files]);
+    return () => {
+      previews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [previews]);
 
   const isFull = files.length >= maxFiles;
 
@@ -50,7 +52,7 @@ function ImageUploader({
     const available = Math.max(maxFiles - files.length, 0);
 
     if (accepted.length > available) {
-      problems.push(`Limite de imagens por imóvel atingido`);
+      problems.push("Limite de imagens por imóvel atingido");
     }
 
     onChange([...files, ...accepted.slice(0, available)]);

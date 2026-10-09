@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../../services/api";
 import type { Property } from "../../types/property";
 import { getErrorMessage } from "../../utils/errors";
@@ -23,29 +23,46 @@ function PropertyList({ refreshKey = 0 }: PropertyListProps) {
   const [actionError, setActionError] = useState("");
   const [deactivatingId, setDeactivatingId] = useState<number | null>(null);
   const [editingProperty, setEditingProperty] = useState<Property | null>(null);
-
-  const loadProperties = useCallback(async () => {
-    try {
-      setLoading(true);
-      setLoadError("");
-
-      const response = await api.get("/properties", {
-        params: { size: 50 },
-      });
-
-      setProperties(response.data.content);
-    } catch (err) {
-      setLoadError(
-        getErrorMessage(err, "Não foi possível carregar os imóveis.")
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    loadProperties();
-  }, [loadProperties, refreshKey]);
+    let cancelled = false;
+
+    api
+      .get("/properties", { params: { size: 50 } })
+      .then((response) => {
+        if (cancelled) return;
+
+        setProperties(response.data.content);
+        setLoadError("");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+
+        setLoadError(
+          getErrorMessage(err, "Não foi possível carregar os imóveis.")
+        );
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshKey, reloadKey]);
+
+  function reload() {
+    setReloadKey((key) => key + 1);
+  }
+
+  function handleRetry() {
+    setLoading(true);
+    setLoadError("");
+    reload();
+  }
 
   async function handleDeactivate(id: number) {
     const confirmed = window.confirm(
@@ -90,7 +107,7 @@ function PropertyList({ refreshKey = 0 }: PropertyListProps) {
         <button
           type="button"
           className="property-list-retry"
-          onClick={loadProperties}
+          onClick={handleRetry}
         >
           Tentar novamente
         </button>
@@ -121,10 +138,11 @@ function PropertyList({ refreshKey = 0 }: PropertyListProps) {
         <div className="property-list-edit-form">
 
           <PropertyForm
+            key={editingProperty.id}
             property={editingProperty}
             onSuccess={() => {
               setEditingProperty(null);
-              loadProperties();
+              reload();
             }}
           />
 

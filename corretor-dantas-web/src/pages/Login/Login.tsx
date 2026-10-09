@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { login } from "../../services/authService";
 import { isAdmin, removeToken, saveToken } from "../../utils/auth";
