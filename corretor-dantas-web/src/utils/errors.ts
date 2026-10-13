@@ -29,7 +29,7 @@ export function getErrorMessage(
   }
 
   if (status === 413) {
-    return "O arquivo enviado é maior que o limite permitido.";
+    return "O envio excede o limite permitido: até 5 MB por imagem e 10 imagens por imóvel.";
   }
 
   if (status >= 500) {

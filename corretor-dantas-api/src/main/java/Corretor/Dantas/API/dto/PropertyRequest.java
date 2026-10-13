@@ -3,6 +3,7 @@ package Corretor.Dantas.API.dto;
 import Corretor.Dantas.API.entity.PropertyType;
 import Corretor.Dantas.API.entity.TransactionType;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ public record PropertyRequest(
 
         @NotNull(message = "Preço é obrigatório")
         @DecimalMin(value = "0.01", message = "Preço deve ser maior que zero")
+        @Digits(integer = 13, fraction = 2, message = "Preço inválido (até 13 dígitos e 2 casas decimais)")
         BigDecimal price,
 
         @NotNull(message = "Tipo do imóvel é obrigatório")
@@ -40,15 +42,19 @@ public record PropertyRequest(
 
         @NotNull(message = "Área é obrigatória")
         @DecimalMin(value = "0.01", message = "Área deve ser maior que zero")
+        @Digits(integer = 8, fraction = 2, message = "Área inválida (até 8 dígitos e 2 casas decimais)")
         BigDecimal area,
 
         @NotBlank(message = "Cidade é obrigatória")
+        @Size(max = 100, message = "Cidade deve ter no máximo 100 caracteres")
         String city,
 
         @NotBlank(message = "Bairro é obrigatório")
+        @Size(max = 100, message = "Bairro deve ter no máximo 100 caracteres")
         String neighborhood,
 
         @NotBlank(message = "Endereço é obrigatório")
+        @Size(max = 255, message = "Endereço deve ter no máximo 255 caracteres")
         String address
 ) {
 }

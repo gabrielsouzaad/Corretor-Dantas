@@ -1,13 +1,14 @@
 package Corretor.Dantas.API.controller;
 
 import Corretor.Dantas.API.dto.PageResponse;
+import Corretor.Dantas.API.dto.PropertyImageResponse;
 import Corretor.Dantas.API.dto.PropertyRequest;
 import Corretor.Dantas.API.dto.PropertyResponse;
 import Corretor.Dantas.API.entity.Property;
 import Corretor.Dantas.API.entity.PropertyType;
 import Corretor.Dantas.API.entity.TransactionType;
-import Corretor.Dantas.API.exception.InvalidPaginationException;
 import Corretor.Dantas.API.service.PropertyService;
+import Corretor.Dantas.API.util.PaginationRules;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,7 +17,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import Corretor.Dantas.API.dto.PropertyImageResponse;
 
 import java.math.BigDecimal;
 
@@ -59,23 +59,7 @@ public class PropertyController {
             ) Pageable pageable
     ) {
 
-        if (pageable.getPageNumber() < 0) {
-            throw new InvalidPaginationException(
-                    "O número da página não pode ser negativo"
-            );
-        }
-
-        if (pageable.getPageSize() <= 0) {
-            throw new InvalidPaginationException(
-                    "O tamanho da página deve ser maior que zero"
-            );
-        }
-
-        if (pageable.getPageSize() > 50) {
-            throw new InvalidPaginationException(
-                    "O tamanho máximo da página é 50"
-            );
-        }
+        PaginationRules.validate(pageable);
 
         Page<PropertyResponse> properties =
                 propertyService.findAll(
@@ -148,7 +132,6 @@ public class PropertyController {
                 property.getImages().stream()
                         .map(PropertyImageResponse::from)
                         .toList()
-
         );
     }
 }

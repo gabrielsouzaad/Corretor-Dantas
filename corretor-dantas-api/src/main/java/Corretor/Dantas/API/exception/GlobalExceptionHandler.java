@@ -17,6 +17,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import org.springframework.data.core.PropertyReferenceException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -137,6 +138,15 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, "Recurso não encontrado");
     }
 
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ApiError> handleInvalidProperty(
+            PropertyReferenceException exception) {
+        return build(
+                HttpStatus.BAD_REQUEST,
+                "Campo de ordenação ou filtro inválido"
+        );
+    }
+
     //  Upload de arquivos
 
     @ExceptionHandler(InvalidFileException.class)
@@ -150,7 +160,7 @@ public class GlobalExceptionHandler {
             MaxUploadSizeExceededException exception) {
         return build(
                 HttpStatus.PAYLOAD_TOO_LARGE,
-                "Imagem maior que o limite de 5 MB"
+                "O envio excede o limite permitido: até 5 MB por imagem e 10 imagens por imóvel"
         );
     }
 

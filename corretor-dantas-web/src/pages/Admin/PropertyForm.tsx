@@ -207,6 +207,7 @@ function PropertyForm({
               setTitle(event.target.value)
             }
             placeholder="Ex.: Apartamento moderno"
+            maxLength={150}
             required
           />
         </div>
@@ -243,6 +244,7 @@ function PropertyForm({
             }
             placeholder="Descreva o imóvel..."
             rows={5}
+            maxLength={2000}
             required
           />
         </div>
@@ -366,6 +368,7 @@ function PropertyForm({
               setCity(event.target.value)
             }
             placeholder="Aracaju"
+            maxLength={100}
             required
           />
         </div>
@@ -383,6 +386,7 @@ function PropertyForm({
               setNeighborhood(event.target.value)
             }
             placeholder="Farolândia"
+            maxLength={100}
             required
           />
         </div>
@@ -400,6 +404,7 @@ function PropertyForm({
               setAddress(event.target.value)
             }
             placeholder="Rua, número..."
+            maxLength={255}
             required
           />
         </div>
