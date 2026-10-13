@@ -3,6 +3,7 @@ package Corretor.Dantas.API.config;
 import Corretor.Dantas.API.entity.Role;
 import Corretor.Dantas.API.entity.User;
 import Corretor.Dantas.API.repository.UserRepository;
+import Corretor.Dantas.API.util.EmailUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,29 +38,36 @@ public class AdminInitializer implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
 
-        if (adminEmail.isBlank() || adminPassword.isBlank()) {
+        String email = EmailUtils.normalize(adminEmail);
+
+        if (email == null || email.isBlank() || adminPassword.isBlank()) {
             log.warn("ADMIN_EMAIL/ADMIN_PASSWORD não definidos: nenhum administrador será criado.");
             return;
         }
 
-        userRepository.findByEmail(adminEmail).ifPresentOrElse(
+        if (adminPassword.length() < 8) {
+            log.warn("ADMIN_PASSWORD deve ter ao menos 8 caracteres: administrador não criado.");
+            return;
+        }
+
+        userRepository.findByEmail(email).ifPresentOrElse(
                 existing -> {
                     if (existing.getRole() != Role.ADMIN) {
                         existing.setRole(Role.ADMIN);
                         userRepository.save(existing);
-                        log.info("Usuário {} promovido a ADMIN.", adminEmail);
+                        log.info("Usuário {} promovido a ADMIN.", email);
                     }
                 },
                 () -> {
                     userRepository.save(
                             User.builder()
                                     .name(adminName)
-                                    .email(adminEmail)
+                                    .email(email)
                                     .password(passwordEncoder.encode(adminPassword))
                                     .role(Role.ADMIN)
                                     .build()
                     );
-                    log.info("Administrador {} criado.", adminEmail);
+                    log.info("Administrador {} criado.", email);
                 }
         );
     }

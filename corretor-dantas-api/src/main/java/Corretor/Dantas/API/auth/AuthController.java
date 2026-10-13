@@ -2,6 +2,7 @@ package Corretor.Dantas.API.auth;
 
 import Corretor.Dantas.API.dto.LoginRequest;
 import Corretor.Dantas.API.dto.LoginResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody LoginRequest request) {
+            @Valid @RequestBody LoginRequest request,
+            HttpServletRequest httpRequest) {
 
-        LoginResponse response = authService.login(request);
+        LoginResponse response =
+                authService.login(request, httpRequest.getRemoteAddr());
 
         return ResponseEntity.ok(response);
     }

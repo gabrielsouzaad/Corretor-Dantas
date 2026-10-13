@@ -86,7 +86,6 @@ public class SecurityConfig {
 
             boolean publicEndpoint =
                     path.equals("/auth/login")
-                            || (path.equals("/users") && HttpMethod.POST.matches(method))
                             || (path.startsWith("/properties") && HttpMethod.GET.matches(method))
                             || (path.startsWith("/uploads") && HttpMethod.GET.matches(method));
 
@@ -164,7 +163,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
 
                         .requestMatchers("/admin/**").hasRole("ADMIN")

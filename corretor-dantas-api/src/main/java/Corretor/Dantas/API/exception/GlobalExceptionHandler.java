@@ -189,4 +189,21 @@ public class GlobalExceptionHandler {
                 "Ocorreu um erro interno no servidor."
         );
     }
+
+    @ExceptionHandler(TooManyAttemptsException.class)
+    public ResponseEntity<ApiError> handleTooManyAttempts(
+            TooManyAttemptsException exception) {
+
+        ApiError error = new ApiError(
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                exception.getMessage(),
+                LocalDateTime.now(),
+                List.of()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("Retry-After", String.valueOf(exception.getRetryAfterSeconds()))
+                .body(error);
+    }
 }

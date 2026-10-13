@@ -5,47 +5,58 @@ import Corretor.Dantas.API.dto.LoginResponse;
 import Corretor.Dantas.API.entity.User;
 import Corretor.Dantas.API.exception.InvalidCredentialsException;
 import Corretor.Dantas.API.repository.UserRepository;
+import Corretor.Dantas.API.util.EmailUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AuthService {
 
+    private static final String INVALID_MESSAGE = "E-mail ou senha inválidos";
+
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final LoginAttemptService loginAttemptService;
+    private final BCryptPasswordEncoder passwordEncoder =
+            new BCryptPasswordEncoder();
+
+    // Hash usado quando o e-mail não existe, para o tempo de resposta
+    // ser o mesmo nos dois casos (evita descobrir e-mails cadastrados).
+    private final String dummyHash;
 
     public AuthService(
             UserRepository userRepository,
-            JwtService jwtService) {
+            JwtService jwtService,
+            LoginAttemptService loginAttemptService) {
 
         this.userRepository = userRepository;
         this.jwtService = jwtService;
-        this.passwordEncoder = new BCryptPasswordEncoder();
+        this.loginAttemptService = loginAttemptService;
+        this.dummyHash = passwordEncoder.encode("senha-ficticia-para-igualar-o-tempo");
     }
 
-    public LoginResponse login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request, String clientIp) {
 
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() ->
-                        new InvalidCredentialsException(
-                                "E-mail ou senha inválidos"
-                        )
-                );
+        String email = EmailUtils.normalize(request.email());
 
-        boolean passwordMatches = passwordEncoder.matches(
-                request.password(),
-                user.getPassword()
-        );
+        loginAttemptService.checkAllowed(clientIp, email);
 
-        if (!passwordMatches) {
-            throw new InvalidCredentialsException(
-                    "E-mail ou senha inválidos"
-            );
+        Optional<User> user = userRepository.findByEmail(email);
+
+        String hash = user.map(User::getPassword).orElse(dummyHash);
+
+        boolean passwordMatches =
+                passwordEncoder.matches(request.password(), hash);
+
+        if (user.isEmpty() || !passwordMatches) {
+            loginAttemptService.recordFailure(clientIp, email);
+            throw new InvalidCredentialsException(INVALID_MESSAGE);
         }
 
-        String token = jwtService.generateToken(user);
+        loginAttemptService.reset(clientIp, email);
 
-        return new LoginResponse(token);
+        return new LoginResponse(jwtService.generateToken(user.get()));
     }
 }

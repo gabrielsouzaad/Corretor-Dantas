@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import axios from "axios";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { login } from "../../services/authService";
 import { isAdmin, removeToken, saveToken } from "../../utils/auth";
@@ -41,8 +42,16 @@ function Login() {
 
       navigate("/admin", { replace: true });
 
-    } catch {
-      setError("E-mail ou senha inválidos.");
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response?.status === 429) {
+        setError(
+          "Muitas tentativas. Aguarde alguns minutos e tente novamente."
+        );
+      } else if (axios.isAxiosError(err) && !err.response) {
+        setError("Não foi possível conectar ao servidor.");
+      } else {
+        setError("E-mail ou senha inválidos.");
+      }
     } finally {
       setLoading(false);
     }
@@ -60,7 +69,7 @@ function Login() {
           <h1>Entrar</h1>
 
           <p>
-            Acesse sua conta para continuar.
+            Acesso restrito à área do corretor.
           </p>
         </div>
 

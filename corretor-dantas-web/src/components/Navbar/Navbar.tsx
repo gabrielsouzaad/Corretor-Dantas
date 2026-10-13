@@ -1,8 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import { isAdmin } from "../../utils/auth";
 import "./Navbar.css";
 
 function Navbar() {
+  useLocation();
+
+  const logged = isAdmin();
+
   return (
     <header className="navbar">
       <div className="navbar-container">
@@ -22,9 +27,15 @@ function Navbar() {
 
           <ThemeToggle />
 
-          <Link to="/login" className="navbar-login">
-            Entrar
-          </Link>
+          {logged ? (
+            <Link to="/admin" className="navbar-login">
+              Painel
+            </Link>
+          ) : (
+            <Link to="/login" className="navbar-login">
+              Entrar
+            </Link>
+          )}
         </nav>
 
       </div>
