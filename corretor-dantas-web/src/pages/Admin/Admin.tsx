@@ -43,7 +43,7 @@ function Admin() {
           onSuccess={() => setRefreshKey((key) => key + 1)}
         />
 
-        <PropertyList refreshKey={refreshKey} />
+         <PropertyList key={refreshKey} />
 
       </section>
     </main>

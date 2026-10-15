@@ -73,6 +73,12 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
 
+    @ExceptionHandler(BusinessRuleException.class)
+    public ResponseEntity<ApiError> handleBusinessRule(
+            BusinessRuleException exception) {
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, exception.getMessage());
+    }
+
     //Requisição inválida
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

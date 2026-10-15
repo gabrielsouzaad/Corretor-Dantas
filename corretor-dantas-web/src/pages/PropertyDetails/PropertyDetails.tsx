@@ -1,8 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import api from "../../services/api";
 import ImageGallery from "../../components/ImageGallery/ImageGallery";
+import api from "../../services/api";
 import type { Property } from "../../types/property";
+import { getErrorMessage } from "../../utils/errors";
+import {
+  STATUS_LABELS,
+  TRANSACTION_LABELS,
+  TYPE_LABELS,
+} from "../../utils/labels";
 import "./PropertyDetails.css";
 
 function PropertyDetails() {
@@ -23,9 +29,12 @@ function PropertyDetails() {
         );
 
         setProperty(response.data);
-      } catch {
+      } catch (err) {
         setError(
-          "Não foi possível carregar os dados do imóvel."
+          getErrorMessage(
+            err,
+            "Não foi possível carregar os dados do imóvel."
+          )
         );
       } finally {
         setLoading(false);
@@ -61,28 +70,21 @@ function PropertyDetails() {
     }
   );
 
-  const transactionLabel =
-    property.transactionType === "SALE"
-      ? "Venda"
-      : "Aluguel";
+  const transactionLabel = TRANSACTION_LABELS[property.transactionType];
 
-  const typeLabel =
-    property.type === "HOUSE"
-      ? "Casa"
-      : property.type === "APARTMENT"
-      ? "Apartamento"
-      : property.type === "LAND"
-      ? "Terreno"
-      : "Comercial";
+  const badgeLabel =
+    property.status === "SOLD" || property.status === "RENTED"
+      ? STATUS_LABELS[property.status]
+      : transactionLabel;
 
   return (
     <main className="property-details">
       <section className="property-details-container">
         <ImageGallery
-                  images={property.images}
-                  alt={property.title}
-                  badge={transactionLabel}
-                />
+          images={property.images}
+          alt={property.title}
+          badge={badgeLabel}
+        />
 
         <div className="property-details-content">
           <span className="property-details-subtitle">
@@ -126,7 +128,7 @@ function PropertyDetails() {
             <h2>Informações</h2>
 
             <p>
-              <strong>Tipo:</strong> {typeLabel}
+              <strong>Tipo:</strong> {TYPE_LABELS[property.type]}
             </p>
 
             <p>

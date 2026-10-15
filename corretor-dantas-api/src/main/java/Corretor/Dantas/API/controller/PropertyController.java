@@ -1,12 +1,12 @@
 package Corretor.Dantas.API.controller;
 
 import Corretor.Dantas.API.dto.PageResponse;
-import Corretor.Dantas.API.dto.PropertyImageResponse;
 import Corretor.Dantas.API.dto.PropertyRequest;
 import Corretor.Dantas.API.dto.PropertyResponse;
-import Corretor.Dantas.API.entity.Property;
+import Corretor.Dantas.API.dto.PropertyStatusRequest;
 import Corretor.Dantas.API.entity.PropertyType;
 import Corretor.Dantas.API.entity.TransactionType;
+import Corretor.Dantas.API.mapper.PropertyMapper;
 import Corretor.Dantas.API.service.PropertyService;
 import Corretor.Dantas.API.util.PaginationRules;
 import jakarta.validation.Valid;
@@ -35,13 +35,11 @@ public class PropertyController {
             @Valid @RequestBody PropertyRequest request
     ) {
 
-        Property property = propertyService.create(request);
-
-        PropertyResponse response = toResponse(property);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(response);
+                .body(PropertyMapper.toResponse(
+                        propertyService.create(request)
+                ));
     }
 
     @GetMapping
@@ -71,12 +69,9 @@ public class PropertyController {
                                 maxPrice,
                                 pageable
                         )
-                        .map(this::toResponse);
+                        .map(PropertyMapper::toResponse);
 
-        PageResponse<PropertyResponse> response =
-                PageResponse.from(properties);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(PageResponse.from(properties));
     }
 
     @GetMapping("/{id}")
@@ -84,9 +79,9 @@ public class PropertyController {
             @PathVariable Long id
     ) {
 
-        Property property = propertyService.findById(id);
-
-        return ResponseEntity.ok(toResponse(property));
+        return ResponseEntity.ok(
+                PropertyMapper.toResponse(propertyService.findPublicById(id))
+        );
     }
 
     @PutMapping("/{id}")
@@ -95,10 +90,22 @@ public class PropertyController {
             @Valid @RequestBody PropertyRequest request
     ) {
 
-        Property property =
-                propertyService.update(id, request);
+        return ResponseEntity.ok(
+                PropertyMapper.toResponse(propertyService.update(id, request))
+        );
+    }
 
-        return ResponseEntity.ok(toResponse(property));
+    @PutMapping("/{id}/status")
+    public ResponseEntity<PropertyResponse> updateStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody PropertyStatusRequest request
+    ) {
+
+        return ResponseEntity.ok(
+                PropertyMapper.toResponse(
+                        propertyService.updateStatus(id, request.status())
+                )
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -109,29 +116,5 @@ public class PropertyController {
         propertyService.delete(id);
 
         return ResponseEntity.noContent().build();
-    }
-
-    private PropertyResponse toResponse(Property property) {
-
-        return new PropertyResponse(
-                property.getId(),
-                property.getTitle(),
-                property.getDescription(),
-                property.getPrice(),
-                property.getType(),
-                property.getTransactionType(),
-                property.getBedrooms(),
-                property.getBathrooms(),
-                property.getArea(),
-                property.getCity(),
-                property.getNeighborhood(),
-                property.getAddress(),
-                property.getStatus(),
-                property.getCreatedAt(),
-                property.getUpdatedAt(),
-                property.getImages().stream()
-                        .map(PropertyImageResponse::from)
-                        .toList()
-        );
     }
 }

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import type { Property } from "../../types/property";
 import { getImageUrl } from "../../utils/images";
+import { STATUS_LABELS, TRANSACTION_LABELS } from "../../utils/labels";
 import "./PropertyCard.css";
 
 interface PropertyCardProps {
@@ -15,10 +16,8 @@ function PropertyCard({ property }: PropertyCardProps) {
     currency: "BRL",
   });
 
-  const transactionLabel =
-    property.transactionType === "SALE"
-      ? "Venda"
-      : "Aluguel";
+  const unavailable =
+    property.status === "SOLD" || property.status === "RENTED";
 
   const images = property.images ?? [];
   const cover = images.find((image) => image.cover) ?? images[0];
@@ -29,7 +28,7 @@ function PropertyCard({ property }: PropertyCardProps) {
 
   return (
     <article
-      className="property-card"
+      className={"property-card" + (unavailable ? " is-unavailable" : "")}
       onClick={handleClick}
     >
       <div className="property-card-image">
@@ -46,8 +45,14 @@ function PropertyCard({ property }: PropertyCardProps) {
         )}
 
         <span className="property-card-type">
-          {transactionLabel}
+          {TRANSACTION_LABELS[property.transactionType]}
         </span>
+
+        {unavailable && (
+          <span className="property-card-status">
+            {STATUS_LABELS[property.status]}
+          </span>
+        )}
       </div>
 
       <div className="property-card-content">

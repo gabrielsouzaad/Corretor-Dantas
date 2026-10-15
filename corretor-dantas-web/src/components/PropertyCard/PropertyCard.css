@@ -121,3 +121,24 @@
     padding: 16px;
   }
 }
+
+.property-card-status {
+  position: absolute;
+
+  top: 14px;
+  right: 14px;
+
+  padding: 6px 10px;
+
+  background-color: #b91c1c;
+  color: #ffffff;
+
+  border-radius: 5px;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.property-card.is-unavailable .property-card-image img {
+  filter: grayscale(0.6);
+}
