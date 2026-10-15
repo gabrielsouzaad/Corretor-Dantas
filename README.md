@@ -54,24 +54,30 @@ O visitante navega pelo catálogo, vê as fotos e os detalhes de cada imóvel. O
 **Para visitantes**
 
 - Catálogo de imóveis com foto de capa, preço, localização e características
+- Filtros por cidade, bairro, tipo, tipo de negociação e faixa de preço, com ordenação e paginação
+- Filtros e página atual guardados na URL: o botão voltar funciona e a busca pode ser compartilhada
+- Faixa "Vendido" ou "Alugado" nos imóveis que já foram negociados
 - Página de detalhes com galeria de imagens e miniaturas
 - Modo claro e escuro, com preferência salva e respeito ao tema do sistema
 - Layout responsivo (desktop, tablet e celular)
 
 **Para o administrador**
 
-- Login com autenticação JWT e controle de acesso por perfil (`ADMIN`)
-- Cadastro, edição e inativação de imóveis
+- Login com autenticação JWT e controle de acesso por perfil (`ADMIN`); não há cadastro público de usuários
+- Cadastro e edição de imóveis
+- Gestão de status por imóvel: Disponível, Vendido, Alugado ou Inativo (com possibilidade de reativar)
+- Listagem paginada que inclui imóveis inativos, com filtro por status
 - Upload de até **10 imagens por imóvel** (JPG, PNG ou WebP, até 5 MB cada), com escolha da imagem de capa e remoção individual
 - Mensagens de erro claras: validação dos campos, sessão expirada, falta de permissão e falha de conexão
 - Redirecionamento automático para o login quando a sessão expira
-
 **API**
 
-- Listagem paginada com filtros por cidade, bairro, tipo, tipo de negociação e faixa de preço
+- Listagem paginada com filtros por cidade e bairro (busca parcial, sem diferenciar maiúsculas), tipo, tipo de negociação e faixa de preço
+- Ordenação restrita a campos permitidos
 - Respostas de erro padronizadas em JSON
 - Validação do conteúdo real dos arquivos enviados (não confia só na extensão)
-- Inativação lógica: imóveis inativos deixam de aparecer na listagem pública
+- Inativação lógica: imóveis inativos somem da listagem pública e a página deles retorna `404`
+- Regras de negócio: só imóvel de venda pode ser marcado como vendido, e só imóvel de aluguel como alugado
 
 ---
 
@@ -113,21 +119,23 @@ Corretor-Dantas/
 │   │   ├── dto/                         # Objetos de entrada e saída
 │   │   ├── entity/                      # Entidades JPA
 │   │   ├── exception/                   # Exceções e tratamento global de erros
+│   │   ├── mapper/                      # Conversão de entidades em respostas
 │   │   ├── repository/                  # Repositórios Spring Data
 │   │   ├── service/                     # Regras de negócio e armazenamento de arquivos
-│   │   └── specification/               # Filtros dinâmicos de imóveis
+│   │   ├── specification/               # Filtros dinâmicos de imóveis
+│   │   └── util/                        # Normalização de e-mail e regras de paginação
 │   ├── src/main/resources/
 │   └── pom.xml
 │
 ├── corretor-dantas-web/                 # Interface - React + Vite
 │   ├── src/
-│   │   ├── components/                  # Navbar, PropertyCard, ImageGallery, ThemeToggle...
+│   │   ├── components/                  # Navbar, PropertyCard, ImageGallery, Pagination, ThemeToggle...
 │   │   ├── hooks/                       # useTheme
 │   │   ├── pages/                       # Home, Properties, PropertyDetails, Login, Admin
 │   │   ├── routes/                      # Rotas e rota protegida
 │   │   ├── services/                    # Chamadas à API (Axios)
 │   │   ├── types/                       # Tipos TypeScript
-│   │   └── utils/                       # Autenticação, erros e imagens
+│   │   └── utils/                       # Autenticação, erros, imagens e rótulos
 │   └── package.json
 │
 ├── docs/
@@ -261,13 +269,13 @@ VITE_API_URL=http://localhost:8080
 
 | Parâmetro | Exemplo | Descrição |
 |---|---|---|
-| `city` | `Aracaju` | Cidade |
-| `neighborhood` | `Farolândia` | Bairro |
+| `city` | `aju` | Cidade (busca parcial, sem diferenciar maiúsculas) |
+| `neighborhood` | `farol` | Bairro (busca parcial, sem diferenciar maiúsculas) |
 | `type` | `APARTMENT` | `HOUSE`, `APARTMENT`, `LAND` ou `COMMERCIAL` |
 | `transactionType` | `SALE` | `SALE` (venda) ou `RENT` (aluguel) |
-| `minPrice` / `maxPrice` | `200000` / `600000` | Faixa de preço |
+| `minPrice` / `maxPrice` | `200000` / `600000` | Faixa de preço (mínimo maior que o máximo retorna `422`) |
 | `page` / `size` | `0` / `10` | Paginação (`size` máximo: 50) |
-| `sort` | `price,asc` | Ordenação (padrão: `createdAt,desc`) |
+| `sort` | `price,asc` | Ordenação. Campos: `id`, `createdAt`, `updatedAt`, `price`, `area`, `bedrooms`, `bathrooms`, `title`, `city`, `neighborhood` (padrão: `createdAt,desc`) |
 
 Exemplo:
 
@@ -317,14 +325,18 @@ GET /properties?city=Aracaju&type=APARTMENT&maxPrice=600000&page=0&size=10
 
 - Senhas armazenadas com **BCrypt**
 - Autenticação **stateless** com JWT (HS256) e expiração configurável (`jwt.expiration`)
+- Sem cadastro público: o administrador é criado pelas variáveis de ambiente
+- **Limite de tentativas de login**: 5 falhas por IP e e-mail, ou 20 por IP, a cada 15 minutos, com resposta `429` e cabeçalho `Retry-After`
+- Tempo de resposta do login igual para e-mails existentes e inexistentes, evitando descobrir quais e-mails estão cadastrados
+- E-mails normalizados (sem espaços e em minúsculas), sem contas duplicadas por diferença de caixa
 - Rotas de escrita de imóveis e imagens restritas ao perfil `ADMIN`
 - Tokens inválidos ou expirados não afetam as rotas públicas
 - Respostas `401` e `403` padronizadas em JSON
 - Upload validado pelo conteúdo real do arquivo, com nome gerado aleatoriamente (UUID), limite de tamanho e de quantidade
 - No front, a rota `/admin` verifica expiração e perfil do token, e a sessão é encerrada automaticamente em caso de `401`
-
 > A verificação feita no front serve apenas à experiência de uso. A autorização real é sempre feita pela API.
-
+>
+> O contador de tentativas de login fica em memória: zera ao reiniciar a API e não é compartilhado entre várias instâncias. Atrás de um proxy reverso, configure `server.forward-headers-strategy=framework` para que o IP real seja considerado.
 ---
 
 ## 🗺️ Roadmap
@@ -335,12 +347,13 @@ GET /properties?city=Aracaju&type=APARTMENT&maxPrice=600000&page=0&size=10
 - [x] Upload e galeria de imagens
 - [x] Modo escuro e layout responsivo
 - [x] Tratamento de erros padronizado
-- [ ] Filtros e paginação na interface
+- [x] Filtros, ordenação e paginação na interface
+- [x] Gestão de status (vendido, alugado, inativo) e painel com paginação
+- [x] Limite de tentativas de login
 - [ ] Contato direto com o corretor (WhatsApp)
 - [ ] Reordenação de imagens
 - [ ] Testes automatizados
 - [ ] Deploy
-
 
 ---
 
